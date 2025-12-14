@@ -204,9 +204,6 @@ int main() {
             fpsStartTime = currentTimePoint;
         }
 
-        /* Enable Wireframe */
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Enable wireframe mode
-
         /* Process input */
         processInput(window);
 
