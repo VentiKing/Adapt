@@ -2,8 +2,8 @@
 #include "Block.h"
 #include <iostream>
 #include <vector>
+#include <cstddef>
 
-// Define ChunkType as a 3D vector of Block
 using ChunkType = std::vector<std::vector<std::vector<Block>>>;
 
 void addFaceNorth() {
@@ -34,9 +34,8 @@ void processChunk(const ChunkType& Chunk) {
         for (size_t Y = 0; Y < sizeY; ++Y) {
             for (size_t Z = 0; Z < sizeZ; ++Z) {
                 const Block& block = Chunk[X][Y][Z];
-                if (!block.IsActive() || block.blockType == Block::Tranparent) continue;
+                if (!block.IsActive() || block.blockType == Block::Transparent) continue;
 
-                // Check neighbors dynamically
                 bool northSolid = (Y + 1 < sizeY) && Chunk[X][Y + 1][Z].IsActive() && Chunk[X][Y + 1][Z].blockType == Block::Solid;
                 bool southSolid = (Y > 0) && Chunk[X][Y - 1][Z].IsActive() && Chunk[X][Y - 1][Z].blockType == Block::Solid;
                 bool eastSolid = (X + 1 < sizeX) && Chunk[X + 1][Y][Z].IsActive() && Chunk[X + 1][Y][Z].blockType == Block::Solid;
@@ -44,17 +43,14 @@ void processChunk(const ChunkType& Chunk) {
                 bool upSolid = (Z + 1 < sizeZ) && Chunk[X][Y][Z + 1].IsActive() && Chunk[X][Y][Z + 1].blockType == Block::Solid;
                 bool downSolid = (Z > 0) && Chunk[X][Y][Z - 1].IsActive() && Chunk[X][Y][Z - 1].blockType == Block::Solid;
 
-                // If all neighbors are solid, skip this block
                 if (northSolid && southSolid && eastSolid && westSolid && upSolid && downSolid) {
                     continue;
                 }
 
-                // Add only the exposed faces
                 if (!northSolid) addFaceNorth();
                 if (!southSolid) addFaceSouth();
-                if (!eastSolid)  addFaceEast();
-                if (!westSolid)  addFaceWest();
-                // You can add up/down faces similarly if needed
+                if (!eastSolid) addFaceEast();
+                if (!westSolid) addFaceWest();
             }
         }
     }
