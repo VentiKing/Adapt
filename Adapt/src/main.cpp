@@ -20,22 +20,22 @@ float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 int fpsCount = 0;
 std::chrono::steady_clock::time_point fpsStartTime;
-float avgFps = 0;
+float averageFPS = 0;
 float lowestFps = -1;
 float highestFps = -1;
 
-const int clocks = 30;
+const int Clocks = 30;
 
 const unsigned int screenWidth = 1920;
 const unsigned int screenHeight = 1080;
 
-bool wireframeMode = false;
+static bool wireFrameMode;
 
 void processInput(GLFWwindow* window);
 
 /* Cube vertices (positions and color) */
 float CubeVertices[] = {
-    // Positions       color
+    // Positions      //color bits
     // Front face
     1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
@@ -137,18 +137,18 @@ int main() {
     /* Load shaders */
     Shader shader("assets/shaders/vertShader.glsl", "assets/shaders/fragShader.glsl");
 
-    /* Set up the VAO, VBO, and EBO for the cube */
-    unsigned int VAO, VBO, EBO;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
+    /* Set up the Vertex Array Object, Vertex Buffer Object, and Element Buffer Object for the cube */
+    unsigned int vertexArrayObject, vertexBufferObject, elementBufferObject;
+    glGenVertexArrays(1, &vertexArrayObject);
+    glGenBuffers(1, &vertexBufferObject);
+    glGenBuffers(1, &elementBufferObject);
 
-    glBindVertexArray(VAO);
+    glBindVertexArray(vertexArrayObject);
 
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBufferObject);
     glBufferData(GL_ARRAY_BUFFER, sizeof(CubeVertices), CubeVertices, GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBufferObject);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(CubeIndices), CubeIndices, GL_STATIC_DRAW);
 
     /* Define vertex attributes */
@@ -186,8 +186,8 @@ int main() {
         std::chrono::steady_clock::time_point currentTimePoint = std::chrono::steady_clock::now();
 
         if (std::chrono::duration_cast<std::chrono::seconds>(currentTimePoint - fpsStartTime).count() >= 1) {
-            avgFps = fpsCount;
-            std::cout << "Average FPS: " << avgFps << std::endl;
+            averageFPS = fpsCount;
+            std::cout << "Average FPS: " << averageFPS << std::endl;
 
             lowestFps = -1;
             highestFps = -1;
@@ -210,27 +210,27 @@ int main() {
 
         glm::mat4 view = glm::lookAt(glm::vec3(2.0f, 2.0f, 3.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.0f, 1.0f, 0.0f));
         glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)screenWidth / (float)screenHeight, 0.1f, 100.0f);
-        glm::mat4 camMatrix = projection * view;
-        glUniformMatrix4fv(glGetUniformLocation(shader.ID, "camMatrix"), 1, GL_FALSE, glm::value_ptr(camMatrix));
+        glm::mat4 cameraMatrix = projection * view;
+        glUniformMatrix4fv(glGetUniformLocation(shader.ID, "cameraMatrix"), 1, GL_FALSE, glm::value_ptr(cameraMatrix));
         std::cout << "Camera position working / set" << std::endl;
-        camera.matrix(45.0f, 0.1f, 100.0f, shader, "camMatrix");
+        camera.matrix(45.0f, 0.1f, 100.0f, shader, "cameraMatrix");
 
         /* Draw the cubes */
         std::cout << "Shader ID: " << shader.ID << std::endl;
         GLint modelLoc = glGetUniformLocation(shader.ID, "model");
         std::cout << "Model uniform location: " << modelLoc << std::endl;
         shader.use();
-        glBindVertexArray(VAO);
+        glBindVertexArray(vertexArrayObject);
         
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(glm::mat4(1.0f)));
 
-        if (wireframeMode) {
+        if (wireFrameMode = true) {
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         } else {
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         }
 
-        std::cout << "Drawing cube" << std::endl;
+        //std::cout << "Drawing cube" << std::endl;
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
 
         /* Swap front and back buffers */
@@ -245,9 +245,9 @@ int main() {
     }
 
     /* Clean up */
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
+    glDeleteVertexArrays(1, &vertexArrayObject);
+    glDeleteBuffers(1, &vertexBufferObject);
+    glDeleteBuffers(1, &elementBufferObject);
 
     stbi_image_free(pixels);
     glfwDestroyWindow(window);
@@ -257,9 +257,10 @@ int main() {
 
 /* Process inputs */
 void processInput(GLFWwindow* window) {
-    static bool isFullscreen = false;
     static int windowedWidth = 1920, windowedHeight = 1080;
     static int windowedX = 0, windowedY = 0;
+
+    static bool isFullscreen = false;
     static bool f11Pressed = false;
     static bool lPressed = false;
 
@@ -286,9 +287,9 @@ void processInput(GLFWwindow* window) {
     }
     else if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS && !lPressed) {
         lPressed = true;
-        wireframeMode = !wireframeMode;
-    }
-    else if (glfwGetKey(window, GLFW_KEY_L) == GLFW_RELEASE) {
+        std::cout << "\n\nPressed L Key\n\n" << std::endl;
+        wireFrameMode = false;
+    } else {
         lPressed = false;
     }
 }
