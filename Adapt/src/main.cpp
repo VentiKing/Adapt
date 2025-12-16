@@ -29,19 +29,19 @@ const int Clocks = 30;
 const unsigned int screenWidth = 1920;
 const unsigned int screenHeight = 1080;
 
-static bool wireFrameMode;
+bool wireFrameMode = false;
 
 void processInput(GLFWwindow* window);
 
 /* Cube vertices (positions and color) */
 float CubeVertices[] = {
     // Positions      //color bits
-    // Front face
+    // Back face
     1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
     0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f,
     1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
     0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-    // Back face
+    // Front face
     0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
     1.0f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
     0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f,
@@ -118,10 +118,10 @@ int main() {
     unsigned char* pixels = stbi_load("assets/textures/ObsidianAxe.png", &width, &height, &channels, 4);
 
     if (!pixels) {
-        std::cerr << "Failed to load texture" << std::endl;
-        glfwDestroyWindow(window);
-        glfwTerminate();
-        return -1;
+    std::cerr << "Failed to load texture" << std::endl;
+    glfwDestroyWindow(window);
+    glfwTerminate();
+    return -1;
     }
 
     /* Change window icon */
@@ -197,6 +197,7 @@ int main() {
 
         /* Process input */
         processInput(window);
+        camera.Inputs(window);
 
         /* Render here */
         glViewport(0, 0, screenWidth, screenHeight);
@@ -206,29 +207,22 @@ int main() {
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        camera.Inputs(window);
 
         glm::mat4 view = glm::lookAt(glm::vec3(2.0f, 2.0f, 3.0f), glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(0.0f, 1.0f, 0.0f));
         glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)screenWidth / (float)screenHeight, 0.1f, 100.0f);
         glm::mat4 cameraMatrix = projection * view;
         glUniformMatrix4fv(glGetUniformLocation(shader.ID, "cameraMatrix"), 1, GL_FALSE, glm::value_ptr(cameraMatrix));
-        std::cout << "Camera position working / set" << std::endl;
+        //std::cout << "Camera position working / set" << std::endl;
         camera.matrix(45.0f, 0.1f, 100.0f, shader, "cameraMatrix");
 
         /* Draw the cubes */
-        std::cout << "Shader ID: " << shader.ID << std::endl;
+        //std::cout << "Shader ID: " << shader.ID << std::endl;
         GLint modelLoc = glGetUniformLocation(shader.ID, "model");
-        std::cout << "Model uniform location: " << modelLoc << std::endl;
+        //std::cout << "Model uniform location: " << modelLoc << std::endl;
         shader.use();
         glBindVertexArray(vertexArrayObject);
         
         glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(glm::mat4(1.0f)));
-
-        if (wireFrameMode = true) {
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        } else {
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        }
 
         //std::cout << "Drawing cube" << std::endl;
         glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
@@ -241,7 +235,7 @@ int main() {
 
         auto cycleEndTime = std::chrono::steady_clock::now();
         auto cycleDuration = std::chrono::duration_cast<std::chrono::milliseconds>(cycleEndTime - cycleStartTime).count();
-        std::cout << "Cycle runtime: " << cycleDuration << " ms" << std::endl;
+        //std::cout << "Cycle runtime: " << cycleDuration << " ms" << std::endl;
     }
 
     /* Clean up */
@@ -255,7 +249,6 @@ int main() {
     return 0;
 }
 
-/* Process inputs */
 void processInput(GLFWwindow* window) {
     static int windowedWidth = 1920, windowedHeight = 1080;
     static int windowedX = 0, windowedY = 0;
@@ -267,7 +260,8 @@ void processInput(GLFWwindow* window) {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
     }
-    else if (glfwGetKey(window, GLFW_KEY_F11) == GLFW_PRESS && !f11Pressed) {
+    //F11 Key Press [Full Screen]
+    if (glfwGetKey(window, GLFW_KEY_F11) == GLFW_PRESS && !f11Pressed) {
         f11Pressed = true;
         if (!isFullscreen) {
             GLFWmonitor* monitor = glfwGetPrimaryMonitor();
@@ -282,14 +276,22 @@ void processInput(GLFWwindow* window) {
             isFullscreen = false;
         }
     }
-    else if (glfwGetKey(window, GLFW_KEY_F11) == GLFW_RELEASE) {
+    if (glfwGetKey(window, GLFW_KEY_F11) == GLFW_RELEASE) {
         f11Pressed = false;
     }
-    else if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS && !lPressed) {
+    //L Key Press [Debug Mode]
+    if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS && !lPressed) {
         lPressed = true;
-        std::cout << "\n\nPressed L Key\n\n" << std::endl;
-        wireFrameMode = false;
-    } else {
+        wireFrameMode = !wireFrameMode;
+
+        if (wireFrameMode) {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        }
+        else {
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        }
+    }
+    if (glfwGetKey(window, GLFW_KEY_L) == GLFW_RELEASE) {
         lPressed = false;
     }
 }
