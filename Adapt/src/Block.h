@@ -1,18 +1,21 @@
 #pragma once
-
 #include <string>
 
 class Block {
 public:
-	enum BlockType {
-		Solid,
-		Liquid,
-		Tranparent
-	};
-	~Block();
-	bool IsActive();
-	void SetActive(bool active);
-	BlockType blockType;
+    enum BlockType {
+        Solid,
+        Liquid,
+        Transparent
+    };
 
-	std::string BlockName;
+    bool isActive;
+    BlockType blockType;
+    std::string BlockName;
+
+    Block() : isActive(true), blockType(Solid), BlockName("") {}
+    ~Block();
+
+    bool IsActive() const;
+    void SetActive(bool active);
 };

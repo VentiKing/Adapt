@@ -15,6 +15,7 @@
 
 #include "Shader.h"
 #include "Camera.h"
+#include "Inputs.h"
 
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
@@ -196,8 +197,7 @@ int main() {
         }
 
         /* Process input */
-        processInput(window);
-        camera.Inputs(window);
+        Inputs::Update(window, camera);
 
         /* Render here */
         glViewport(0, 0, screenWidth, screenHeight);
@@ -247,51 +247,4 @@ int main() {
     glfwDestroyWindow(window);
     glfwTerminate();
     return 0;
-}
-
-void processInput(GLFWwindow* window) {
-    static int windowedWidth = 1920, windowedHeight = 1080;
-    static int windowedX = 0, windowedY = 0;
-
-    static bool isFullscreen = false;
-    static bool f11Pressed = false;
-    static bool lPressed = false;
-
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-        glfwSetWindowShouldClose(window, true);
-    }
-    //F11 Key Press [Full Screen]
-    if (glfwGetKey(window, GLFW_KEY_F11) == GLFW_PRESS && !f11Pressed) {
-        f11Pressed = true;
-        if (!isFullscreen) {
-            GLFWmonitor* monitor = glfwGetPrimaryMonitor();
-            const GLFWvidmode* mode = glfwGetVideoMode(monitor);
-            glfwGetWindowPos(window, &windowedX, &windowedY);
-            glfwGetWindowSize(window, &windowedWidth, &windowedHeight);
-            glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
-            isFullscreen = true;
-        }
-        else {
-            glfwSetWindowMonitor(window, nullptr, windowedX, windowedY, screenWidth, screenHeight, 0);
-            isFullscreen = false;
-        }
-    }
-    if (glfwGetKey(window, GLFW_KEY_F11) == GLFW_RELEASE) {
-        f11Pressed = false;
-    }
-    //L Key Press [Debug Mode]
-    if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS && !lPressed) {
-        lPressed = true;
-        wireFrameMode = !wireFrameMode;
-
-        if (wireFrameMode) {
-            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        }
-        else {
-            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        }
-    }
-    if (glfwGetKey(window, GLFW_KEY_L) == GLFW_RELEASE) {
-        lPressed = false;
-    }
 }
