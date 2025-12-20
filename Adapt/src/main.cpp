@@ -35,10 +35,10 @@ bool wireFrameMode = false;
 // ---- Cube test data (can keep for reference) ----
 float CubeVertices[] = {
     // Positions      //color bits
-    1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-    0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-    1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-    0.0f, 1.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+    1.0f, 0.0f, 0.0f,
+    0.0f, 0.0f, 0.0f,
+    1.0f, 1.0f, 0.0f,
+    0.0f, 1.0f, 0.0f
 };
 unsigned int CubeIndices[] = { 0,1,2, 1,3,2 };
 
