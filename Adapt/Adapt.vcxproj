@@ -140,6 +140,7 @@
     <ClCompile Include="src\Inputs.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Shader.cpp" />
+    <ClCompile Include="src\stb_image_impl.cpp" />
     <ClCompile Include="vendor\glad.c" />
   </ItemGroup>
   <ItemGroup>

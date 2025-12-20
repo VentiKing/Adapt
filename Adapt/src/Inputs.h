@@ -4,7 +4,6 @@
 #include <glm/glm.hpp>
 class Camera;
 
-namespace Inputs
-{
+namespace Inputs{
     void Update(GLFWwindow* window, Camera& camera);
 }

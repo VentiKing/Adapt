@@ -1,8 +1,10 @@
+#include <iostream>
+
 #include "Inputs.h"
 #include "Camera.h"
 #include <glm/gtc/matrix_transform.hpp>
 
-/* App-level input state */
+/* Global Variables input state */
 static bool wireFrameMode = false;
 static bool isFullscreen = false;
 static bool f11Pressed = false;
@@ -13,8 +15,7 @@ static int windowedHeight = 1080;
 static int windowedX = 0;
 static int windowedY = 0;
 
-namespace Inputs
-{
+namespace Inputs {
     void Update(GLFWwindow* window, Camera& camera) {
         /* ---------- Application Controls ---------- */
 
@@ -105,8 +106,7 @@ namespace Inputs
 
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 
-        if (camera.firstClick)
-        {
+        if (camera.firstClick) {
             glfwSetCursorPos(window, camera.width / 2, camera.height / 2);
             camera.firstClick = false;
         }
