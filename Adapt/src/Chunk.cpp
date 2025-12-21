@@ -3,45 +3,45 @@
 
 // ---- Face builders ----
 inline void addFaceNorth(std::vector<Chunk::Vertex>& v, float x, float y, float z) {
-    v.push_back({ x, y + 1, z});
-    v.push_back({ x + 1, y + 1, z});
-    v.push_back({ x, y + 1, z + 1});
-    v.push_back({ x + 1, y + 1, z + 1});
+    v.push_back({x, y + 1, z});
+    v.push_back({x + 1, y + 1, z});
+    v.push_back({x, y + 1, z + 1});
+    v.push_back({x + 1, y + 1, z + 1});
 }
 
 inline void addFaceSouth(std::vector<Chunk::Vertex>& v, float x, float y, float z) {
-    v.push_back({ x, y, z});
-    v.push_back({ x, y, z + 1});
-    v.push_back({ x + 1, y, z});
-    v.push_back({ x + 1, y, z + 1});
+    v.push_back({x, y, z});
+    v.push_back({x, y, z + 1});
+    v.push_back({x + 1, y, z});
+    v.push_back({x + 1, y, z + 1});
 }
 
 inline void addFaceEast(std::vector<Chunk::Vertex>& v, float x, float y, float z) {
-    v.push_back({ x + 1, y, z});
-    v.push_back({ x + 1, y + 1, z});
-    v.push_back({ x + 1, y, z + 1});
-    v.push_back({ x + 1, y + 1, z + 1});
+    v.push_back({x + 1, y, z});
+    v.push_back({x + 1, y + 1, z});
+    v.push_back({x + 1, y, z + 1});
+    v.push_back({x + 1, y + 1, z + 1});
 }
 
 inline void addFaceWest(std::vector<Chunk::Vertex>& v, float x, float y, float z) {
-    v.push_back({ x, y, z});
-    v.push_back({ x, y, z + 1});
-    v.push_back({ x, y + 1, z});
-    v.push_back({ x, y + 1, z + 1});
+    v.push_back({x, y, z});
+    v.push_back({x, y, z + 1});
+    v.push_back({x, y + 1, z});
+    v.push_back({x, y + 1, z + 1});
 }
 
 inline void addFaceUp(std::vector<Chunk::Vertex>& v, float x, float y, float z) {
-    v.push_back({ x, y, z + 1});
-    v.push_back({ x + 1, y, z + 1});
-    v.push_back({ x, y + 1, z + 1});
-    v.push_back({ x + 1, y + 1, z + 1});
+    v.push_back({x, y, z + 1});
+    v.push_back({x + 1, y, z + 1});
+    v.push_back({x, y + 1, z + 1});
+    v.push_back({x + 1, y + 1, z + 1});
 }
 
 inline void addFaceDown(std::vector<Chunk::Vertex>& v, float x, float y, float z) {
-    v.push_back({ x, y, z});
-    v.push_back({ x, y + 1, z});
-    v.push_back({ x + 1, y, z});
-    v.push_back({ x + 1, y + 1, z});
+    v.push_back({x, y, z});
+    v.push_back({x, y + 1, z});
+    v.push_back({x + 1, y, z});
+    v.push_back({x + 1, y + 1, z});
 }
 
 // ---- Chunk constructor ----
@@ -138,12 +138,12 @@ void Chunk::processChunk(const ChunkType& chunk, std::vector<Vertex>& vertices, 
                 float fy = static_cast<float>(y);
                 float fz = static_cast<float>(z);
 
-                if (!north) { addFaceNorth(vertices, fx, fy, fz); faceCount++; }
-                if (!south) { addFaceSouth(vertices, fx, fy, fz); faceCount++; }
-                if (!east) { addFaceEast(vertices, fx, fy, fz); faceCount++; }
-                if (!west) { addFaceWest(vertices, fx, fy, fz); faceCount++; }
-                if (!up) { addFaceUp(vertices, fx, fy, fz); faceCount++; }
-                if (!down) { addFaceDown(vertices, fx, fy, fz); faceCount++; }
+                if (!north) {addFaceNorth(vertices, fx, fy, fz); faceCount++;}
+                if (!south) {addFaceSouth(vertices, fx, fy, fz); faceCount++;}
+                if (!east) {addFaceEast(vertices, fx, fy, fz); faceCount++;}
+                if (!west) {addFaceWest(vertices, fx, fy, fz); faceCount++;}
+                if (!up) {addFaceUp(vertices, fx, fy, fz); faceCount++;}
+                if (!down) {addFaceDown(vertices, fx, fy, fz); faceCount++;}
             }
         }
     }

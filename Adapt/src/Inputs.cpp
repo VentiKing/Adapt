@@ -2,7 +2,6 @@
 
 #include "Inputs.h"
 #include "Camera.h"
-#include <glm/gtc/matrix_transform.hpp>
 
 /* Global Variables input state */
 static bool wireFrameMode = false;

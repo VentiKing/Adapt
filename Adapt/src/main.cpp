@@ -30,11 +30,14 @@ float highestFps = -1;
 
 const unsigned int screenWidth = 1920;
 const unsigned int screenHeight = 1080;
-bool wireFrameMode = false;
+
+const int Chunk_Size = 16;
+const int Chunk_Distance = 8;
+const int Half_Render = Chunk_Distance / 2;
 
 // ---- Cube test data (can keep for reference) ----
 float CubeVertices[] = {
-    // Positions      //color bits
+    // Positions
     1.0f, 0.0f, 0.0f,
     0.0f, 0.0f, 0.0f,
     1.0f, 1.0f, 0.0f,
@@ -131,8 +134,9 @@ int main() {
 
     fpsStartTime = std::chrono::steady_clock::now();
 
-    // ---- Create a test chunk ----
+    // ---- Create a chunk ----
     ChunkType chunk = createTestChunk(16, 16, 16);
+    Chunk::processChunk(chunk, chunkVertices, chunkIndices);
     Chunk::processChunk(chunk, chunkVertices, chunkIndices);
 
     // ---- Voxel chunk VAO/VBO ----
@@ -168,9 +172,7 @@ int main() {
         auto currentTimePoint = std::chrono::steady_clock::now();
         if (std::chrono::duration_cast<std::chrono::seconds>(currentTimePoint - fpsStartTime).count() >= 1) {
             averageFPS = fpsCount;
-            std::cout << "Average FPS: " << averageFPS
-                << " (Lowest: " << lowestFps
-                << ", Highest: " << highestFps << ")" << std::endl;
+            std::cout << "Average FPS: " << averageFPS << " (Lowest: " << lowestFps << ", Highest: " << highestFps << ")" << std::endl;
             fpsCount = 0;
             lowestFps = -1;
             highestFps = -1;
@@ -189,16 +191,37 @@ int main() {
         glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)screenWidth / (float)screenHeight, 0.1f, 100.0f);
         glm::mat4 cameraMatrix = projection * view;
 
-        // ---- Draw voxel chunk ----
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, glm::vec3(-8.0f, -8.0f, -8.0f)); // Center the 16x16x16 chunk
-
+        // ---- Draw voxel chunks ----
         glUniformMatrix4fv(glGetUniformLocation(shader.ID, "cameraMatrix"), 1, GL_FALSE, glm::value_ptr(cameraMatrix));
-        glUniformMatrix4fv(glGetUniformLocation(shader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
+
+        glm::ivec3 cameraChunk;
+        cameraChunk.x = floor(camera.Position.x / Chunk_Size);
+        cameraChunk.y = floor(camera.Position.y / Chunk_Size);
+        cameraChunk.z = floor(camera.Position.z / Chunk_Size);
 
         glBindVertexArray(chunkVAO);
-        glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(chunkIndices.size()), GL_UNSIGNED_INT, 0);
+        for (int x = 0; x < Chunk_Distance; x++) {
+            for (int y = 0; y < 1; y++) {
+                for (int z = 0; z < Chunk_Distance; z++) {
+                    glm::ivec3 chunkPos;
+                    chunkPos.x = cameraChunk.x + x - Half_Render;
+                    chunkPos.y = cameraChunk.y - 1;
+                    chunkPos.z = cameraChunk.z + z - Half_Render;
+
+                    glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(chunkPos) * (float)Chunk_Size);
+
+                    glUniformMatrix4fv(glGetUniformLocation(shader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
+                    glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(chunkIndices.size()), GL_UNSIGNED_INT, 0);
+                }
+            }
+        }
+
+        glEnable(GL_CULL_FACE);
+        glFrontFace(GL_CCW);
+        glCullFace(GL_FRONT);
+
         glBindVertexArray(0);
+
 
         glfwSwapBuffers(window);
         glfwPollEvents();
