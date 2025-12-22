@@ -15,13 +15,16 @@ static int windowedX = 0;
 static int windowedY = 0;
 
 namespace Inputs {
+
     void Update(GLFWwindow* window, Camera& camera) {
         /* ---------- Application Controls ---------- */
 
-        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
             glfwSetWindowShouldClose(window, true);
+        }
 
         // Fullscreen toggle (F11)
+
         if (glfwGetKey(window, GLFW_KEY_F11) == GLFW_PRESS && !f11Pressed) {
             f11Pressed = true;
 
@@ -43,6 +46,7 @@ namespace Inputs {
 
                 isFullscreen = true;
             }
+
             else {
                 glfwSetWindowMonitor(
                     window,
@@ -57,9 +61,11 @@ namespace Inputs {
                 isFullscreen = false;
             }
         }
+
         if (glfwGetKey(window, GLFW_KEY_F11) == GLFW_RELEASE) {
             f11Pressed = false;
         }
+
         // Wireframe toggle (L)
         if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS && !lPressed) {
             lPressed = true;
@@ -70,6 +76,7 @@ namespace Inputs {
                 wireFrameMode ? GL_LINE : GL_FILL
             );
         }
+
         if (glfwGetKey(window, GLFW_KEY_L) == GLFW_RELEASE) {
             lPressed = false;
         }

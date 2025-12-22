@@ -141,6 +141,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\stb_image_impl.cpp" />
+    <ClCompile Include="src\World.cpp" />
     <ClCompile Include="vendor\glad.c" />
   </ItemGroup>
   <ItemGroup>
@@ -149,6 +150,7 @@
     <ClInclude Include="src\Chunk.h" />
     <ClInclude Include="src\Inputs.h" />
     <ClInclude Include="src\Shader.h" />
+    <ClInclude Include="src\World.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="assets\shaders\fragShader.glsl" />

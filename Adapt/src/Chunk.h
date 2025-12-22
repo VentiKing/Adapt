@@ -8,7 +8,6 @@ class Chunk {
 public:
     struct Vertex {
         float x, y, z;
-        //float r, g, b;  // ADD COLOR DATA
     };
 
     Chunk(size_t sx, size_t sy, size_t sz);

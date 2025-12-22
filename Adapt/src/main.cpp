@@ -43,8 +43,10 @@ float CubeVertices[] = {
     1.0f, 1.0f, 0.0f,
     0.0f, 1.0f, 0.0f
 };
-unsigned int CubeIndices[] = { 0,1,2, 1,3,2 };
-
+unsigned int CubeIndices[] = {
+    1, 0, 2,
+    1, 2, 3
+};
 // ---- Voxel chunk variables ----
 std::vector<Chunk::Vertex> chunkVertices;
 std::vector<unsigned> chunkIndices;
@@ -95,6 +97,7 @@ int main() {
         glfwTerminate();
         return -1;
     }
+
     GLFWimage images[1]{};
     images[0].width = width;
     images[0].height = height;
@@ -119,8 +122,8 @@ int main() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBufferObject);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(CubeIndices), CubeIndices, GL_STATIC_DRAW);
 
-    // Vertex layout: x,y,z,r,g,b
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Chunk::Vertex), (void*)0);
+    // Vertex layout: x,y,z
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(3*sizeof(float)), (void*)0);
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Chunk::Vertex), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
@@ -129,6 +132,7 @@ int main() {
     // ---- Depth buffer ----
     glEnable(GL_DEPTH_TEST);
     glDepthFunc(GL_LESS);
+
 
     Camera camera(screenWidth, screenHeight, glm::vec3(8.0f, 8.0f, 25.0f));
 
@@ -192,36 +196,22 @@ int main() {
         glm::mat4 cameraMatrix = projection * view;
 
         // ---- Draw voxel chunks ----
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::rotate(model, glm::radians(50.0f), glm::vec3(0.0f, 1.0f, 0.0f)); // Rotate the chunk
+        model = glm::translate(model, glm::vec3(-8.0f, -8.0f, -8.0f)); // Center the 16x16x16 chunk
+
         glUniformMatrix4fv(glGetUniformLocation(shader.ID, "cameraMatrix"), 1, GL_FALSE, glm::value_ptr(cameraMatrix));
-
-        glm::ivec3 cameraChunk;
-        cameraChunk.x = floor(camera.Position.x / Chunk_Size);
-        cameraChunk.y = floor(camera.Position.y / Chunk_Size);
-        cameraChunk.z = floor(camera.Position.z / Chunk_Size);
-
-        glBindVertexArray(chunkVAO);
-        for (int x = 0; x < Chunk_Distance; x++) {
-            for (int y = 0; y < 1; y++) {
-                for (int z = 0; z < Chunk_Distance; z++) {
-                    glm::ivec3 chunkPos;
-                    chunkPos.x = cameraChunk.x + x - Half_Render;
-                    chunkPos.y = cameraChunk.y - 1;
-                    chunkPos.z = cameraChunk.z + z - Half_Render;
-
-                    glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(chunkPos) * (float)Chunk_Size);
-
-                    glUniformMatrix4fv(glGetUniformLocation(shader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
-                    glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(chunkIndices.size()), GL_UNSIGNED_INT, 0);
-                }
-            }
-        }
+        glUniformMatrix4fv(glGetUniformLocation(shader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
 
         glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
         glFrontFace(GL_CCW);
-        glCullFace(GL_FRONT);
 
+        glBindVertexArray(chunkVAO);
+        glDrawElements(GL_TRIANGLES, static_cast<GLsizei>(chunkIndices.size()), GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
-
+        
+        glBindVertexArray(0);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
